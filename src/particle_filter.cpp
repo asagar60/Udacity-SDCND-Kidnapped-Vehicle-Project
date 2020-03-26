@@ -38,7 +38,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     std::normal_distribution<double> dist_y(y, std[1]);
     std::normal_distribution<double> dist_theta(theta, std[2]);
 
-    num_particles = 100;  // TODO: Set the number of particles
+    num_particles = 20;  // TODO: Set the number of particles
 
     for( int i = 0; i < num_particles; ++i){
 
@@ -53,9 +53,9 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     }
     is_initialized = true;
 
-    for (int i =0; i < num_particles; ++i){
-        std::cout<<" ID :"<<particles[i].id<<" X :"<<particles[i].x<<" Y :"<<particles[i].y<<" Theta :"<<particles[i].theta<<" Weight :"<<particles[i].weight<<" Weight :"<<weights[i]<<std::endl;
-    }
+    //for (int i =0; i < num_particles; ++i){
+     //   std::cout<<" ID :"<<particles[i].id<<" X :"<<particles[i].x<<" Y :"<<particles[i].y<<" Theta :"<<particles[i].theta<<" Weight :"<<particles[i].weight<<" Weight :"<<weights[i]<<std::endl;
+    //}
 
     std::cout<<"\n";
     std::cout<<"Initialized : "<<is_initialized<<std::endl;
@@ -114,16 +114,19 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted,
      *   during the updateWeights phase.
      */
 
-    for(LandmarkObs pred: predicted) {
+    for(LandmarkObs observation: observations) {
         double minDistance = 9999;
-
-        for (LandmarkObs observation: observations) {
+        int k = -1;
+        for (LandmarkObs pred: predicted) {
             double min_2 = dist(pred.x, pred.y, observation.x, observation.y);
 
             if (minDistance  > min_2) {
                 minDistance = min_2;
-                observation.id = pred.id;
+                k = pred.id;
             }
+        }
+        if(k != -1){
+            observation.id = k;
         }
     }
 
@@ -187,28 +190,27 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
         double gauss_norm = 1 / (2 * M_PI * std_landmark[0] * std_landmark[1]);
 
         double prob = 1.0;
-        for(auto & pred : predicted){
+        for(unsigned int k = 0; k < transformed_observations.size(); ++k){
 
-            double pred_x = pred.x;
-            double pred_y = pred.y;
-            double pred_id = pred.id;
+            double t_obs_x = transformed_observations[k].x;
+            double t_obs_y = transformed_observations[k].y;
+            double t_obs_id = transformed_observations[k].id;
 
-            for (unsigned int k = 0; k < transformed_observations.size(); ++k) {
+            for (auto & pred : predicted ) {
 
-                double t_obs_x = transformed_observations[k].x;
-                double t_obs_y = transformed_observations[k].y;
-                double t_obs_id = transformed_observations[k].id;
+                double pred_x = pred.x;
+                double pred_y = pred.y;
+                double pred_id = pred.id;
 
                 if (t_obs_id == pred_id){
-                    double exponent = pow(pred_x - t_obs_x, 2) / 2 * pow(std_landmark[0], 2) +
-                                      pow(pred_y - t_obs_y, 2) / 2 * pow(std_landmark[1], 2);
+                    double exponent = (pow(pred_x - t_obs_x, 2) / 2 * pow(std_landmark[0], 2) )+
+                            (pow(pred_y - t_obs_y, 2) / 2 * pow(std_landmark[1], 2));
                     prob = prob * gauss_norm * exp(-exponent);
-                    break;
                 }
             }
         }
 
-        particles[p].weight =  prob;
+        particles[p].weight *=  prob;
         weights[p] = prob;
         weight_normalizer = weight_normalizer + prob;
 
@@ -223,12 +225,12 @@ void ParticleFilter::updateWeights(double sensor_range, double std_landmark[],
     for (int p = 0; p < num_particles; ++p){
         particles[p].weight = particles[p].weight/ weight_normalizer;
         weights[p] = particles[p].weight;
-    }
+   }
 
-    for (int p = 0; p < num_particles; ++p){
-        std::cout<<"\n";
-        std::cout<<"ID :"<<p<<" Probability :"<<particles[p].weight<<" Weights :"<<weights[p];
-    }
+//    for (int p = 0; p < num_particles; ++p){
+ //       std::cout<<"\n";
+  //      std::cout<<"ID :"<<p<<" Probability :"<<particles[p].weight<<" Weights :"<<weights[p];
+   // }
 }
 
 void ParticleFilter::resample() {
@@ -252,10 +254,10 @@ void ParticleFilter::resample() {
     particles = resampled_Set;
 
 
-    std::cout<<"\n";
-    for (int i =0; i < num_particles; ++i){
-        std::cout<<" ID :"<<particles[i].id<<" X :"<<particles[i].x<<" Y :"<<particles[i].y<<" Theta :"<<particles[i].theta<<" Weight :"<<particles[i].weight<<" Weight :"<<weights[i]<<std::endl;
-    }
+    //std::cout<<"\n";
+    //for (int i =0; i < num_particles; ++i){
+     //   std::cout<<" ID :"<<particles[i].id<<" X :"<<particles[i].x<<" Y :"<<particles[i].y<<" Theta :"<<particles[i].theta<<" Weight :"<<particles[i].weight<<" Weight :"<<weights[i]<<std::endl;
+    //}
 
 }
 
