@@ -240,6 +240,38 @@ void ParticleFilter::resample() {
 
     particles = resampled_Set;
 
+
+
+
+    /////////////////////////////////// Random Sampling Implementation///////////////////////
+
+    /**
+     * Uncomment below lines and comment above implementation to check Random sampling implementation*/
+
+    //vector<Particle> resampled_particles;
+    //std::default_random_engine gen;
+
+    //std::uniform_int_distribution<int> particle_index(0, num_particles - 1);
+
+    //int current_index = particle_index(gen);
+
+    //double beta = 0.0;
+
+    //double max_weight = *max_element(std::begin(weights), std::end(weights));
+
+    //for (int i = 0; i < particles.size(); i++) {
+     //   std::uniform_real_distribution<double> random_weight(0.0, max_weight * 2);
+      //  beta += random_weight(gen);
+
+      //  while (beta > weights[current_index]) {
+      //      beta -= weights[current_index];
+      //      current_index = (current_index + 1) % num_particles;
+      //  }
+      //  resampled_particles.push_back(particles[current_index]);
+    //}
+
+    //particles = resampled_particles;
+
 }
 
 
