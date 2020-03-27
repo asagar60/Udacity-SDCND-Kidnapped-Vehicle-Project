@@ -36,7 +36,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
     std::normal_distribution<double> dist_y(y, std[1]);
     std::normal_distribution<double> dist_theta(theta, std[2]);
 
-    num_particles = 50;  // TODO: Set the number of particles
+    num_particles = 100;  // TODO: Set the number of particles
 
     particles = vector<Particle>(num_particles);
     weights = vector<double >(num_particles, 1.0);
